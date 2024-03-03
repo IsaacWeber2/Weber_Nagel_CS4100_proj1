@@ -17,3 +17,42 @@ using namespace std;
 WS      [ \t\n]+
 COMMENT "//".*
 
+//keyword rules
+IF  "if"
+ELSE  "else"
+FOR   "for"
+WHILE   "while"
+
+
+//operator rules
+EQUAL   "="
+PLUS    "+"
+MINUS   "-"
+MULTIPLY  "*"
+DIVIDE  "/"
+
+//puncuation rules
+SEMICOLON   ";"
+PERIOD    "."
+COMMA   ","
+
+// identifiers and literals
+DIGIT       [0-9]
+LETTER      [a-zA-Z]
+INT_LITERAL {DIGIT}+
+FLOAT_LITERAL   {DIGIT}+"."{DIGIT}+
+ID          {LETTER}({LETTER}|{DIGIT})*
+
+//mathcing tokens
+
+%%
+{WS}        { /* Ignore whitespace */ }
+{COMMENT}   { /* Ignore comments */ }
+
+
+%%
+
+int main() {
+  yylex(); //runs lexer
+  return 0;
+}
