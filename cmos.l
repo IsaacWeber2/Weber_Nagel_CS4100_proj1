@@ -1,58 +1,86 @@
 %{
+//*****************************************************************************************
+// File: cmos.l
+// Purpose: Tokenize one student code submission
+// build instructions
+// flex cmos.l
+// g++ -o PlagiarismDetector lex.yy.x
+// ./PlagiarismDetector < data_file.txt
+// ****************************************************************************************
+
+//declarations
+
 #include <iostream>
+
 using namespace std;
 
-// Define any necessary functions or variables here
+//define things here
+
+#define VARIABLE 1
+#define FUNCTION 2
+#define OPERATOR 3
+#define BASIC 4
+
+#define TKUNMATCHED 255
+
+int linecount = 1;
+int variable_count = 1;
+int function_count = 1;
+
+
+
+
 %}
 
-// Defining token types
-%token INTEGER_LITERAL
-%token IDENTIFIER
-%token OPERATOR
-%token KEYWORD
-%token PUNCTUATION
-%token FLOAT_LITERAL
+D [0-9]
+OD [0-9Xx#*$]
+L [a-zA-Z_]
 
-// Define rules for whitespace and comments
-WS      [ \t\n]+
-COMMENT "//".*
-
-//keyword rules
-IF  "if"
-ELSE  "else"
-FOR   "for"
-WHILE   "while"
-
-
-//operator rules
-EQUAL   "="
-PLUS    "+"
-MINUS   "-"
-MULTIPLY  "*"
-DIVIDE  "/"
-
-//puncuation rules
-SEMICOLON   ";"
-PERIOD    "."
-COMMA   ","
-
-// identifiers and literals
-DIGIT       [0-9]
-LETTER      [a-zA-Z]
-INT_LITERAL {DIGIT}+
-FLOAT_LITERAL   {DIGIT}+"."{DIGIT}+
-ID          {LETTER}({LETTER}|{DIGIT})*
-
-//mathcing tokens
-
-%%
-{WS}        { /* Ignore whitespace */ }
-{COMMENT}   { /* Ignore comments */ }
+/* ignoring whitespace and comments */
+WS          [ \t\n]+
+COMMENT     "//".*
+MULTICOMMENT "/\*"([^*]|\*+[^*/])*\*+\/"
 
 
 %%
+
+{WS}            { /* Ignore whitespace */ }
+{COMMENT}       { /* Ignore comments */ }
+{MULTICOMMENT}  { /* Ignore multi-line comments */ }
+
+
+"+"    {return OPERATOR;}
+"%"    {return OPERATOR;}
+"-"    {return OPERATOR;}
+"/"   {return OPERATOR;}
+"*"   {return OPERATOR;}
+
+
+.							{ 	//unmatched
+								return TKUNMATCHED;
+							}
+
+
+
+%%
+
+int yywrap(){
+	return true;
+}
 
 int main() {
-  yylex(); //runs lexer
-  return 0;
+	int token = 0;
+	token = yylex();
+	while(token){
+		switch (token) {
+			case OPERATOR:
+				cout << "<Operator: " << yytext << " > " << endl;
+				break;
+      case FUNCTION:
+        cout << "<Function: " << function_count << " " << yytext << " > " endl;
+        function_count++;
+        break;
+	}
+		token = yylex();
+}	
 }
