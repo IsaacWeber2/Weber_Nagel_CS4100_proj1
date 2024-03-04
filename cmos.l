@@ -4,6 +4,7 @@
 // Purpose: Tokenize one student code submission
 // build instructions
 // flex cmos.l
+// make
 // g++ -o PlagiarismDetector lex.yy.c
 // ./PlagiarismDetector < data_file.txt
 // ****************************************************************************************
@@ -21,6 +22,7 @@ using namespace std;
 #define OPERATOR 3
 #define BASIC 4
 #define EXTRA 5
+#define IGNORE 6
 
 #define TKUNMATCHED 255
 
@@ -44,10 +46,10 @@ WS          [ \t\n]+
 COMMENT     "//".*
 MULTICOMMENT "/*"([^*]|\*+[^*/])*\*+"/"
 VARIABLE    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*(\([^\)]*\))?[ \t]*(\[[0-9]+\])?[ \t]*(=[^;]+)?[ \t]*;
-FUNCTION    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\([^\)]*\)[ \t]*(\{)?[ \t]*;
+FUNCTION    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\([^\)]*\*\)?[ \t]*(\{)?[ \t]*;
 OPERATOR   [-+=*/%><!&|^]=?|&&|\|\||[?~:;,\.];
 BASIC       [a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[(){}[\]]
-IGNORE      . |
+IGNORE      . 
 %%
 
 {WS}            { /* Ignore whitespace */ }
@@ -58,7 +60,6 @@ IGNORE      . |
 {OPERATOR}      { return OPERATOR; }
 {BASIC}         { return BASIC; }
 {IGNORE}        { /* Ignore everything else */ }
-.               { return TKUNMATCHED; }
 
 
 
@@ -85,7 +86,7 @@ int main() {
 				variable_count++;
 				break;
 			case BASIC:
-				cout << "Basic: " << yytext << " > " << endl;
+				//cout << "Basic: " << yytext << " > " << endl;
 				break;
 			default:
 				cout << "<Unmatched Token>" << endl;
