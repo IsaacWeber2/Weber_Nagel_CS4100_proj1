@@ -43,10 +43,15 @@ TYPE int|float|long|char|double|bool|signed|unsigned|short
 
 /* ignoring whitespace and comments */
 WS          [ \t\n]+
-COMMENT     "//".*
-MULTICOMMENT "/*"([^*]|\*+[^*/])*\*+"/"
+
+COMMENT "//.*"
+MULTICOMMENT "/\*([^*]|\*+[^*/])*\*/"
+
+
 VARIABLE    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*(\([^\)]*\))?[ \t]*(\[[0-9]+\])?[ \t]*(=[^;]+)?[ \t]*;
-FUNCTION    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\([^\)]*\*\)?[ \t]*(\{)?[ \t]*;
+
+/* FUNCTION    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\([^\)]*\*\)?[ \t]*(\{)?[ \t]*; */
+FUNCTION    [ \t]*(void|int|float|long|char|double|bool|signed|unsigned|short)[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\([^)]*\)[ \t]*(;|\{[^\}]*\})
 OPERATOR   [-+=*/%><!&|^]=?|&&|\|\||[?~:;,\.];
 BASIC       [a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[(){}[\]]
 IGNORE      . 
@@ -89,7 +94,7 @@ int main() {
 				//cout << "Basic: " << yytext << " > " << endl;
 				break;
 			default:
-				cout << "<Unmatched Token>" << endl;
+				cout << "<Unmatched Token> " << yytext <<  endl;
 				break;
 
 }	
