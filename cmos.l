@@ -43,24 +43,22 @@ TYPE int|float|long|char|double|bool|signed|unsigned|short
 WS          [ \t\n]+
 COMMENT     "//".*
 MULTICOMMENT "/*"([^*]|\*+[^*/])*\*+"/"
-VARIABLE {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*(\[[0-9]+\])?[ \t]*(=[^;]+)?[ \t]*;
-
+VARIABLE    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*(\([^\)]*\))?[ \t]*(\[[0-9]+\])?[ \t]*(=[^;]+)?[ \t]*;
+FUNCTION    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\([^\)]*\)[ \t]*(\{)?[ \t]*;
+OPERATOR   [-+=*/%><!&|^]=?|&&|\|\||[?~:;,\.];
+BASIC       [a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[(){}[\]]
+IGNORE      . |
 %%
 
 {WS}            { /* Ignore whitespace */ }
 {COMMENT}       { /* Ignore comments */ }
 {MULTICOMMENT}  { return EXTRA; }
-
-{VARIABLE}		{return VARIABLE;}
-
-
-
-
-
-
-.							{ 	//unmatched
-								return TKUNMATCHED;
-							}
+{VARIABLE}      { return VARIABLE; }
+{FUNCTION}      { return FUNCTION; }
+{OPERATOR}      { return OPERATOR; }
+{BASIC}         { return BASIC; }
+{IGNORE}        { /* Ignore everything else */ }
+.               { return TKUNMATCHED; }
 
 
 
@@ -89,8 +87,12 @@ int main() {
 			case BASIC:
 				cout << "Basic: " << yytext << " > " << endl;
 				break;
+			default:
+				cout << "<Unmatched Token>" << endl;
+				break;
 
 }	
 			token = yylex();
 }
+return 0;
 }
