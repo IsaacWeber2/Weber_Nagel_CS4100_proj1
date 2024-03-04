@@ -4,7 +4,7 @@
 // Purpose: Tokenize one student code submission
 // build instructions
 // flex cmos.l
-// g++ -o PlagiarismDetector lex.yy.x
+// g++ -o PlagiarismDetector lex.yy.c
 // ./PlagiarismDetector < data_file.txt
 // ****************************************************************************************
 
@@ -20,6 +20,7 @@ using namespace std;
 #define FUNCTION 2
 #define OPERATOR 3
 #define BASIC 4
+#define EXTRA 5
 
 #define TKUNMATCHED 255
 
@@ -33,27 +34,28 @@ int function_count = 1;
 %}
 
 D [0-9]
-OD [0-9Xx#*$]
 L [a-zA-Z_]
+ALL L|" "
+
+TYPE int|float|long|char|double|bool|signed|unsigned|short
 
 /* ignoring whitespace and comments */
 WS          [ \t\n]+
 COMMENT     "//".*
-MULTICOMMENT "/\*"([^*]|\*+[^*/])*\*+\/"
-
+MULTICOMMENT "/*"([^*]|\*+[^*/])*\*+"/"
+VARIABLE {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*(\[[0-9]+\])?[ \t]*(=[^;]+)?[ \t]*;
 
 %%
 
 {WS}            { /* Ignore whitespace */ }
 {COMMENT}       { /* Ignore comments */ }
-{MULTICOMMENT}  { /* Ignore multi-line comments */ }
+{MULTICOMMENT}  { return EXTRA; }
+
+{VARIABLE}		{return VARIABLE;}
 
 
-"+"    {return OPERATOR;}
-"%"    {return OPERATOR;}
-"-"    {return OPERATOR;}
-"/"   {return OPERATOR;}
-"*"   {return OPERATOR;}
+
+
 
 
 .							{ 	//unmatched
@@ -76,11 +78,19 @@ int main() {
 			case OPERATOR:
 				cout << "<Operator: " << yytext << " > " << endl;
 				break;
-      case FUNCTION:
-        cout << "<Function: " << function_count << " " << yytext << " > " endl;
-        function_count++;
-        break;
-	}
-		token = yylex();
+      		case FUNCTION:
+				cout << "<Function: " << function_count << " " << yytext << " > " << endl;
+				function_count++;
+				break;
+			case VARIABLE:
+				cout << "<Variable: " << variable_count << " > " << endl;
+				variable_count++;
+				break;
+			case BASIC:
+				cout << "Basic: " << yytext << " > " << endl;
+				break;
+
 }	
+			token = yylex();
+}
 }
