@@ -22,7 +22,7 @@ FLEX_SRC = lex.yy.cpp
 OBJ = $(SRC:.cpp=.o) $(FLEX_SRC:.cpp=.o)
 
 # Target executable
-TARGET = PlagiarismDetector
+TARGET = lexer
 
 .PHONY: all clean
 
