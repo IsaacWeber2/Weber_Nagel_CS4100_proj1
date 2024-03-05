@@ -34,3 +34,30 @@ vector<string> readTokenizedSubmissions(const string &filename)
   }
   return submissions;
 }
+
+// Function to generate fingerprints from tokenized submissions
+vector<Fingerprint> generateFingerprints(const string &submission)
+{
+  vector<Fingerprint> fingerprints;
+  // Define your sliding window size
+  int windowSize = 10;
+  // Define your hash function (you can use any hash function you like)
+  auto hashFunction = [](const string &str)
+  {
+    // Simple hash function for demonstration purposes
+    int hash = 0;
+    for (char c : str)
+    {
+      hash = (hash * 31 + c) % 1000000007; // Adjust modulus as needed
+    }
+    return to_string(hash);
+  };
+
+  for (int i = 0; i <= submission.length() - windowSize; ++i)
+  {
+    string window = submission.substr(i, windowSize);
+    string hashValue = hashFunction(window);
+    fingerprints.push_back({hashValue, i});
+  }
+  return fingerprints;
+}
