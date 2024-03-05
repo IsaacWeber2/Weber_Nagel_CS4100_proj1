@@ -5,17 +5,12 @@
 // build instructions
 // flex cmos.l
 // make
-// g++ -o PlagiarismDetector lex.yy.c
-// ./PlagiarismDetector < data_file.txt
+// g++ -o lexer lex.yy.c
+// ./lexer < data_file.txt
 // ****************************************************************************************
-
-//declarations
-
 #include <iostream>
-
+#include <fstream>
 using namespace std;
-
-//define things here
 
 #define VARIABLE 1
 #define FUNCTION 2
@@ -29,10 +24,6 @@ using namespace std;
 int linecount = 1;
 int variable_count = 1;
 int function_count = 1;
-
-
-
-
 %}
 
 D [0-9]
@@ -47,58 +38,66 @@ WS          [ \t\n]+
 COMMENT "//.*"
 MULTICOMMENT "/\*([^*]|\*+[^*/])*\*/"
 
-
 VARIABLE    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*(\([^\)]*\))?[ \t]*(\[[0-9]+\])?[ \t]*(=[^;]+)?[ \t]*;
 
-/* FUNCTION    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\([^\)]*\*\)?[ \t]*(\{)?[ \t]*; */
-FUNCTION    [ \t]*(void|int|float|long|char|double|bool|signed|unsigned|short)[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\([^)]*\)[ \t]*(;|\{[^\}]*\})
+FUNCTION    [a-zA-Z_][a-zA-Z_0-9]*"("
 OPERATOR   [-+=*/%><!&|^]=?|&&|\|\||[?~:;,\.];
-BASIC       [a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[(){}[\]]
 IGNORE      . 
+
 %%
+
+"if"		{return BASIC;}
+"else"		{return BASIC;}
+"while"		{return BASIC;}
+"for"		{return BASIC;}
+"return"	{return BASIC;}
+";"			{return BASIC;}
+","			{return BASIC;}
+"("			{return BASIC;}
+")"			{return BASIC;}
+"{"			{return BASIC;}
+"}"			{return BASIC;}
 
 {WS}            { /* Ignore whitespace */ }
 {COMMENT}       { /* Ignore comments */ }
-{MULTICOMMENT}  { return EXTRA; }
+{MULTICOMMENT}  { /* Ignore multi line comment*/ }
 {VARIABLE}      { return VARIABLE; }
 {FUNCTION}      { return FUNCTION; }
 {OPERATOR}      { return OPERATOR; }
-{BASIC}         { return BASIC; }
 {IGNORE}        { /* Ignore everything else */ }
-
-
 
 %%
 
 int yywrap(){
-	return true;
+    return true;
 }
 
 int main() {
-	int token = 0;
-	token = yylex();
-	while(token){
-		switch (token) {
-			case OPERATOR:
-				cout << "<Operator: " << yytext << " > " << endl;
-				break;
-      		case FUNCTION:
-				cout << "<Function: " << function_count << " " << yytext << " > " << endl;
-				function_count++;
-				break;
-			case VARIABLE:
-				cout << "<Variable: " << variable_count << " > " << endl;
-				variable_count++;
-				break;
-			case BASIC:
-				//cout << "Basic: " << yytext << " > " << endl;
-				break;
-			default:
-				cout << "<Unmatched Token> " << yytext <<  endl;
-				break;
-
-}	
-			token = yylex();
-}
-return 0;
+    int token = 0;
+    token = yylex();
+	ofstream outputFile("tokens.txt");
+    while(token){
+        switch (token) {
+            case OPERATOR:
+                outputFile << "<Operator: " << yytext << " > " << endl;
+                break;
+            case FUNCTION:
+                outputFile << "<Function: " << function_count << " > " << endl;
+                function_count++;
+                break;
+            case VARIABLE:
+                outputFile << "<Variable: " << variable_count << " > " << endl;
+                variable_count++;
+                break;
+            case BASIC:
+                outputFile << "<Basic: " << yytext << " > " << endl;
+                break;
+            default:
+                outputFile << "<Unmatched Token> " << yytext <<  endl;
+                break;
+        }   
+        token = yylex();
+    }
+	outputFile.close();
+    return 0;
 }
