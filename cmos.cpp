@@ -61,3 +61,46 @@ vector<Fingerprint> generateFingerprints(const string &submission)
   }
   return fingerprints;
 }
+
+// Function to compare fingerprints and detect similarities
+void detectSimilarities(const vector<Fingerprint> &fingerprints1, const vector<Fingerprint> &fingerprints2)
+{
+  // Define your similarity threshold
+  double similarityThreshold = 0.8;
+  // Calculate the number of matching fingerprints required for similarity
+  int matchingThreshold = ceil(similarityThreshold * min(fingerprints1.size(), fingerprints2.size()));
+
+  unordered_map<string, int> fingerprintCounts;
+
+  // Count the occurrences of each fingerprint in the first set
+  for (const auto &fingerprint : fingerprints1)
+  {
+    fingerprintCounts[fingerprint.hashValue]++;
+  }
+
+  int matchingFingerprints = 0;
+
+  // Check for matching fingerprints in the second set
+  for (const auto &fingerprint : fingerprints2)
+  {
+    if (fingerprintCounts[fingerprint.hashValue] > 0)
+    {
+      matchingFingerprints++;
+    }
+  }
+
+  // Output similarity result
+  if (matchingFingerprints >= matchingThreshold)
+  {
+    cout << "Similarity Detected: " << (double)matchingFingerprints / min(fingerprints1.size(), fingerprints2.size()) << endl;
+  }
+  else
+  {
+    cout << "No Similarity Detected" << endl;
+  }
+}
+
+int main()
+{
+  return 0;
+}
