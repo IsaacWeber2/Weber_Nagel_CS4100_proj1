@@ -39,7 +39,8 @@ $(TARGET): $(OBJ)
 
 # Generate Flex source file
 $(FLEX_SRC): cmos.l
-	$(LEX) $(LEXFLAGS) -o$@ $<
+	$(LEX) $(LEXFLAGS) -o $@ $<
 
 clean:
 	rm -f $(OBJ) $(TARGET) $(FLEX_SRC)
+
