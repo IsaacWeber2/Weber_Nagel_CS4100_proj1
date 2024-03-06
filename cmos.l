@@ -10,6 +10,7 @@
 // ****************************************************************************************
 #include <iostream>
 #include <fstream>
+#include <string>
 using namespace std;    
 
 #define VARIABLE 1
@@ -96,7 +97,7 @@ int main() {
         }   
         token = yylex();
     }
-    cout << endl;
+    outputFile << "\n"; // Insert newline character
 	outputFile.close();
     return 0;
 }

@@ -548,7 +548,6 @@ char *yytext;
 // ****************************************************************************************
 #include <iostream>
 #include <fstream>
-#include <dirent.h>
 #include <string>
 using namespace std;    
 
@@ -564,9 +563,9 @@ using namespace std;
 int linecount = 1;
 int variable_count = 1;
 int function_count = 1;
-#line 568 "lex.yy.c"
+#line 567 "lex.yy.c"
 /* ignoring whitespace and comments */
-#line 570 "lex.yy.c"
+#line 569 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -783,10 +782,10 @@ YY_DECL
 		}
 
 	{
-#line 49 "cmos.l"
+#line 48 "cmos.l"
 
 
-#line 790 "lex.yy.c"
+#line 789 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -845,102 +844,102 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 51 "cmos.l"
+#line 50 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 52 "cmos.l"
+#line 51 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 53 "cmos.l"
+#line 52 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 54 "cmos.l"
+#line 53 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 55 "cmos.l"
+#line 54 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 56 "cmos.l"
+#line 55 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 57 "cmos.l"
+#line 56 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 58 "cmos.l"
+#line 57 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 59 "cmos.l"
+#line 58 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 60 "cmos.l"
+#line 59 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 61 "cmos.l"
+#line 60 "cmos.l"
 {return BASIC;}
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 63 "cmos.l"
+#line 62 "cmos.l"
 { /* Ignore whitespace */ }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 64 "cmos.l"
+#line 63 "cmos.l"
 { /* Ignore comments */ }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 65 "cmos.l"
+#line 64 "cmos.l"
 { /* Ignore multi line comment*/ }
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 66 "cmos.l"
+#line 65 "cmos.l"
 { return VARIABLE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 67 "cmos.l"
+#line 66 "cmos.l"
 { return FUNCTION; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 68 "cmos.l"
+#line 67 "cmos.l"
 { return OPERATOR; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 69 "cmos.l"
+#line 68 "cmos.l"
 { /* Ignore everything else */ }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 71 "cmos.l"
+#line 70 "cmos.l"
 ECHO;
 	YY_BREAK
-#line 944 "lex.yy.c"
+#line 943 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1945,71 +1944,38 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 71 "cmos.l"
+#line 70 "cmos.l"
 
 
 int yywrap(){
     return true;
 }
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        cout << "Usage: " << argv[0] << " <directory>\n";
-        return 1;
+int main() {
+    int token = 0;
+    token = yylex();
+	ofstream outputFile("tokens.txt", ios::app);
+    while(token){
+        switch (token) {
+            case OPERATOR:
+                outputFile << "<Operator: " << yytext << " > ";
+                break;
+            case FUNCTION:
+                outputFile << "<Function: " << function_count << " > ";
+                function_count++;
+                break;
+            case VARIABLE:
+                outputFile << "<Variable: " << variable_count << " > ";
+                variable_count++;
+                break;
+            case BASIC:
+                outputFile << "<Basic: " << yytext << " > ";
+                break;
+
+        }   
+        token = yylex();
     }
-
-    DIR* dirp = opendir(argv[1]);
-    if (dirp == NULL) {
-        perror("Failed to open directory");
-        return 1;
-    }
-
-    struct dirent * dp;
-    while ((dp = readdir(dirp)) != NULL) {
-        string filename = string(argv[1]) + "/" + dp->d_name;
-
-        // Check if the file has a .c extension
-        if (filename.substr(filename.find_last_of(".") + 1) == "c") {
-            // Open the file as the new yyin
-            FILE *myfile = fopen(filename.c_str(), "r");
-            if (!myfile) {
-                cout << "Unable to open file: " << filename << endl;
-                return 1;
-            }
-
-            yyin = myfile;
-
-            int token = 0;
-            token = yylex();
-            ofstream outputFile("tokens.txt", ios::app);
-            while(token){
-                switch (token) {
-                    case OPERATOR:
-                        outputFile << "<Operator: " << yytext << " > ";
-                        break;
-                    case FUNCTION:
-                        outputFile << "<Function: " << function_count << " > ";
-                        function_count++;
-                        break;
-                    case VARIABLE:
-                        outputFile << "<Variable: " << variable_count << " > ";
-                        variable_count++;
-                        break;
-                    case BASIC:
-                        outputFile << "<Basic: " << yytext << " > ";
-                        break;
-                }   
-                token = yylex();
-            }
-            cout << endl;
-            outputFile.close();
-
-            // Close the file
-            fclose(myfile);
-        }
-    }
-
-    closedir(dirp);
+    outputFile << "\n"; // Insert newline character
+	outputFile.close();
     return 0;
 }
-
