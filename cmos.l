@@ -10,7 +10,7 @@
 // ****************************************************************************************
 #include <iostream>
 #include <fstream>
-using namespace std;
+using namespace std;    
 
 #define VARIABLE 1
 #define FUNCTION 2
@@ -75,29 +75,28 @@ int yywrap(){
 int main() {
     int token = 0;
     token = yylex();
-	ofstream outputFile("tokens.txt");
+	ofstream outputFile("tokens.txt", ios::app);
     while(token){
         switch (token) {
             case OPERATOR:
-                outputFile << "<Operator: " << yytext << " > " << endl;
+                outputFile << "<Operator: " << yytext << " > ";
                 break;
             case FUNCTION:
-                outputFile << "<Function: " << function_count << " > " << endl;
+                outputFile << "<Function: " << function_count << " > ";
                 function_count++;
                 break;
             case VARIABLE:
-                outputFile << "<Variable: " << variable_count << " > " << endl;
+                outputFile << "<Variable: " << variable_count << " > ";
                 variable_count++;
                 break;
             case BASIC:
-                outputFile << "<Basic: " << yytext << " > " << endl;
+                outputFile << "<Basic: " << yytext << " > ";
                 break;
-            default:
-                outputFile << "<Unmatched Token> " << yytext <<  endl;
-                break;
+
         }   
         token = yylex();
     }
+    cout << endl;
 	outputFile.close();
     return 0;
 }

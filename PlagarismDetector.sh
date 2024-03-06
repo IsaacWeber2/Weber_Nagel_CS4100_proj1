@@ -2,7 +2,7 @@
 
 # Ensure a directory name is provided as an argument
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 directory_name"
+    echo "Usage: $0 examples"
     exit 1
 fi
 
@@ -17,7 +17,7 @@ for f in $FILES
 do
     echo "Tokenizing $(basename $f) file..."
     # Perform lexical analysis using the scanner and append output to tokens.txt
-    ./scanner < $f >> tokens.txt
+    ./lexer < $f >> tokens.txt
     echo "Finished tokenizing $(basename $f)."
 done
 

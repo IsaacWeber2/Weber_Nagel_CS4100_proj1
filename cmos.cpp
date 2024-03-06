@@ -15,7 +15,7 @@ struct Fingerprint
 };
 
 // Read tokenized submissions from tokens.txt
-vector<string> readTokenizedSubmissions(const string &filename)
+vector<string> readTokenizedSubmissions(const string& filename)
 {
   vector<string> submissions;
   ifstream file(filename);
@@ -36,34 +36,34 @@ vector<string> readTokenizedSubmissions(const string &filename)
 }
 
 // Function to generate fingerprints from tokenized submissions
-vector<Fingerprint> generateFingerprints(const string &submission)
+vector<Fingerprint> generateFingerprints(const string& submission)
 {
   vector<Fingerprint> fingerprints;
   // Define your sliding window size
   int windowSize = 10;
   // Define your hash function (you can use any hash function you like)
-  auto hashFunction = [](const string &str)
-  {
-    // Simple hash function for demonstration purposes
-    int hash = 0;
-    for (char c : str)
+  auto hashFunction = [](const string& str)
     {
-      hash = (hash * 31 + c) % 1000000007; // Adjust modulus as needed
-    }
-    return to_string(hash);
-  };
+      // Simple hash function for demonstration purposes
+      int hash = 0;
+      for (char c : str)
+      {
+        hash = (hash * 31 + c) % 1000000007; // Adjust modulus as needed
+      }
+      return to_string(hash);
+    };
 
   for (int i = 0; i <= submission.length() - windowSize; ++i)
   {
     string window = submission.substr(i, windowSize);
     string hashValue = hashFunction(window);
-    fingerprints.push_back({hashValue, i});
+    fingerprints.push_back({ hashValue, i });
   }
   return fingerprints;
 }
 
 // Function to compare fingerprints and detect similarities
-void detectSimilarities(const vector<Fingerprint> &fingerprints1, const vector<Fingerprint> &fingerprints2)
+void detectSimilarities(const vector<Fingerprint>& fingerprints1, const vector<Fingerprint>& fingerprints2)
 {
   // Define your similarity threshold
   double similarityThreshold = 0.8;
@@ -73,7 +73,7 @@ void detectSimilarities(const vector<Fingerprint> &fingerprints1, const vector<F
   unordered_map<string, int> fingerprintCounts;
 
   // Count the occurrences of each fingerprint in the first set
-  for (const auto &fingerprint : fingerprints1)
+  for (const auto& fingerprint : fingerprints1)
   {
     fingerprintCounts[fingerprint.hashValue]++;
   }
@@ -81,7 +81,7 @@ void detectSimilarities(const vector<Fingerprint> &fingerprints1, const vector<F
   int matchingFingerprints = 0;
 
   // Check for matching fingerprints in the second set
-  for (const auto &fingerprint : fingerprints2)
+  for (const auto& fingerprint : fingerprints2)
   {
     if (fingerprintCounts[fingerprint.hashValue] > 0)
     {
@@ -100,7 +100,7 @@ void detectSimilarities(const vector<Fingerprint> &fingerprints1, const vector<F
   }
 }
 
-int main()
-{
-  return 0;
-}
+// int main()
+// {
+//   return 0;
+// }
