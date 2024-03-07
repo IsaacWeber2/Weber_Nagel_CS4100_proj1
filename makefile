@@ -1,46 +1,41 @@
-# Makefile for Plagiarism Detector
+# Makefile for PlagiarismDetector
 
 # Compiler
-CXX = g++
+CC = g++
+
+# Flex
+FLEX = flex
 
 # Compiler flags
-CXXFLAGS = -Wall -std=c++11
-
-# Lex file
-LEX = flex
-
-# Flex flags
-LEXFLAGS =
+CFLAGS = -std=c++11 -Wall
 
 # Source files
-SRC = cmos.cpp
+LEXER_SRC = lex.yy.c
+CMOS_SRC = cmos.cpp
 
-# Flex-generated file
-FLEX_SRC = lex.yy.cpp
+# Executable names
+LEXER_EXE = lexer
+CMOS_EXE = cmos
 
-# Object files
-OBJ = $(SRC:.cpp=.o) $(FLEX_SRC:.cpp=.o)
+# Flex rules
+$(LEXER_SRC): cmos.l
+	$(FLEX) $<
 
-# Target executable
-TARGET = lexer
+# Build rule for lexer
+$(LEXER_EXE): $(LEXER_SRC)
+	$(CC) $(CFLAGS) -o $@ $<
 
-.PHONY: all clean
+# Rule to run PlagiarismDetector.sh
+run_plagiarism_detector: $(LEXER_EXE)
+	./PlagarismDetector.sh examples
 
-all: $(TARGET)
+# Build rule for CMOS
+$(CMOS_EXE): $(CMOS_SRC)
+	$(CC) $(CFLAGS) -o $@ $<
 
-$(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+# Target to build lexer and run plagiarism detector
+all: $(LEXER_EXE) run_plagiarism_detector $(CMOS_EXE)
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-# Generate Flex source file
-$(FLEX_SRC): cmos.l
-	$(LEX) $(LEXFLAGS) -o $@ $<
-
+# Clean rule
 clean:
-	rm -f $(OBJ) $(TARGET) $(FLEX_SRC)
-
+	rm -f $(LEXER_SRC) $(LEXER_EXE) $(CMOS_EXE)

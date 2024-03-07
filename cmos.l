@@ -6,7 +6,7 @@
 // flex cmos.l
 // make
 // g++ -o lexer lex.yy.c
-// ./lexer < data_file.txt
+// ./PlagarismDetector examples
 // ****************************************************************************************
 #include <iostream>
 #include <fstream>
@@ -36,8 +36,10 @@ TYPE int|float|long|char|double|bool|signed|unsigned|short
 /* ignoring whitespace and comments */
 WS          [ \t\n]+
 
-COMMENT "//.*"
-MULTICOMMENT "/\*([^*]|\*+[^*/])*\*/"
+COMMENT ^.*\/\/.*
+
+MULTICOMMENT \/\*([^*]|\*+[^*/])*\*+\/
+
 
 VARIABLE    {TYPE}[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*(\([^\)]*\))?[ \t]*(\[[0-9]+\])?[ \t]*(=[^;]+)?[ \t]*;
 
@@ -46,6 +48,9 @@ OPERATOR   [-+=*/%><!&|^]=?|&&|\|\||[?~:;,\.];
 IGNORE      . 
 
 %%
+{WS}            { /* Ignore whitespace */ }
+{COMMENT}       { /* Ignore comments */ }
+{MULTICOMMENT}  { /* Ignore multi line comment*/ }
 
 "if"		{return BASIC;}
 "else"		{return BASIC;}
@@ -59,9 +64,6 @@ IGNORE      .
 "{"			{return BASIC;}
 "}"			{return BASIC;}
 
-{WS}            { /* Ignore whitespace */ }
-{COMMENT}       { /* Ignore comments */ }
-{MULTICOMMENT}  { /* Ignore multi line comment*/ }
 {VARIABLE}      { return VARIABLE; }
 {FUNCTION}      { return FUNCTION; }
 {OPERATOR}      { return OPERATOR; }
@@ -80,18 +82,18 @@ int main() {
     while(token){
         switch (token) {
             case OPERATOR:
-                outputFile << "<Operator: " << yytext << " > ";
+                outputFile << yytext << " ";
                 break;
             case FUNCTION:
-                outputFile << "<Function: " << function_count << " > ";
+                outputFile << "Function:" << function_count << " ";
                 function_count++;
                 break;
             case VARIABLE:
-                outputFile << "<Variable: " << variable_count << " > ";
+                outputFile << "<Variable:" << variable_count << " ";
                 variable_count++;
                 break;
             case BASIC:
-                outputFile << "<Basic: " << yytext << " > ";
+                outputFile << yytext << " ";
                 break;
 
         }   
